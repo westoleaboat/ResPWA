@@ -1,49 +1,46 @@
 <script>
-    import { each, listen } from 'svelte/src/runtime/internal';
+    // import { each, listen } from 'svelte/src/runtime/internal';
     import { spots } from '../coordinatesStore';
 
     import { createEventDispatcher } from "svelte";
 
-    let selectedLocation = '';
+    // let selectedLocation = '';
 
     // const last = spots.split(',').map(item => item.trim());
     // const lastItem = last[last.length -1];
     
     const dispatch = createEventDispatcher();
 
-    function handleLocationChange() {
-        dispatch('selectedLocationChange', selectedLocation);
-        console.log('selected location :',selectedLocation)
-    }
+    // function handleLocationChange() {
+    //     dispatch('selectedLocationChange', selectedLocation);
+    //     console.log('selected location :',selectedLocation)
+    // };
 
+    let selectedLocation = {$spots};
     let locationValue = selectedLocation;
     let itemsValue = '';
     let timeValue = '';
     // let spots = [];
+    let collection = [];
     // export let spots;
      
 
-
-
     function handleSubmit() {
         // import spots from './Map.svelte'
-        const newSpot = {
-            location: locationValue,
+        const newCollection = {
+            location: {$spots},
             items: itemsValue,
             time: timeValue
         };
 
-        // spots = [...spots, newSpot];
+        collection = [...collection, newCollection]
 
-    //   inputValue = '';
-        locationValue = '';
+        $spots = '';
         itemsValue = '';
         timeValue = '';
-      // Handle form submission
-    //   console.log('Form submitted!', newSpot);
-      console.log(spots)
 
-    //   console.log(`Longitude: {coordinates.lng}<br />Latitude: ${lngLat.lat}`)
+        console.log(collection[0])
+
     }
 
     
@@ -54,12 +51,9 @@
     <form on:submit|preventDefault={handleSubmit}>
         <label for="locationField">Location:</label>
         {#if $spots.length === 0}
-        <!-- <input type="text" id="locationField" bind:value={locationValue} /> -->
         <input type="text" id="locationField" value="select an option from map" disabled />
         {:else}
-        <!-- <input type="text" id="locationField" bind:value={spots[0]} /> -->
-        <!-- {#each $spots as spot} -->
-        { spots }
+        <input type="text" id="locationField" bind:value={$spots} />
         
         {/if}
         <label for="itemsField">Items:</label>
@@ -73,17 +67,22 @@
 
     <!-- <p>Selected Name: {selectedName}</p> -->
     <div class="spots">
-    {#if $spots.length === 0}
+    {#if collection.length === 0}
         <h2>No entries so far...</h2>
     {:else}
+        {#each collection as col}
+
         <ul class="spots-list">
-            {#each $spots as spot}
-                <li>{spot}</li>
-                <!-- <li>Location: {spot.location}</li>
-                <li>Items: {spot.items}</li>
-                <li>Time: {spot.time}</li> -->
-            {/each}
+            <!-- {#each collection as col} -->
+                <li>{col.location.$spots}</li>
+
+                <li>{col.items}</li>
+                <li>{col.time}</li>
+                
+            <!-- {/each} -->
         </ul>
+        {/each}
+
     {/if}
     </div>
 
@@ -104,6 +103,7 @@
 
     .spots-list {
         flex-direction: column;
+        border: 2px solid red;
     }
 
     form {
